@@ -9,13 +9,19 @@ import {
   Route
 } from "react-router-dom";
 
-//  import LoginButton from './loging/LoginButton';
-//  import LogoutButton from './loging/LogoutButton';
+
  import  MyFavoriteBooks  from './myFavoriteBooks';
  import  Login  from './login';
  import Profile from './loging/profile';
+ import axios from 'axios';
 
 class App extends React.Component {
+
+
+  
+
+
+
 
   render() {
     console.log('app', this.props)
@@ -27,7 +33,7 @@ class App extends React.Component {
               <Switch>
                 <Route exact path="/">
                   {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
-                  {this.props.auth0.isAuthenticated ? <MyFavoriteBooks /> : <Login />}
+                  {this.props.auth0.isAuthenticated ? <MyFavoriteBooks  /> : <Login />}
                   </Route>
                 <Route path="/profile">
                 {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
