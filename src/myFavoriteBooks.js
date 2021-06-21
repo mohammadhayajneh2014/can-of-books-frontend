@@ -7,65 +7,65 @@ import Carousel from 'react-bootstrap/Carousel';
 import { withAuth0 } from '@auth0/auth0-react';
 
 class MyFavoriteBooks extends React.Component {
- 
+
   constructor(props) {
     super(props);
     this.state = {
       bookData: [],
-      email: '',
-      server: process.env.REACT_APP_SERVER_URL
+      email: ''
 
-    }
+
+    };
 
   }
 
-   componentDidMount = async () => {
-    
-    try {
-      const paramsObj = {
-        email: this.props.auth0.user.email
-      }
+  componentDidMount = () => {
 
-       const books = await axios.get(`${this.state.server}/books`, { params: paramsObj });
-        //  const books = await axios.get(`${this.state.server}/books?email=mohammadhayagneh96@gmail.com`);
+
+    // const paramsObj = {
+    //   email: this.props.auth0.user.email
+    // }
+    let server = process.env.REACT_APP_SERVER_URL;
+    let bookUrl = `${server}/books?email=${this.props.auth0.user.email}`;
+
+
+    axios.get(bookUrl).then((bookResult) => {
+      let dataBook = bookResult.data;
       this.setState({
-        bookData: books.data
-        
-      });
-      console.log(`this is books${this.bookData}`);
-    } catch (error) {
-      console.log(error);
-    }
+        bookData: dataBook
+      })
+    });
+
   }
 
   render() {
-//  const{isAuthenticated}=this.props.auth0;
+   
     return (
       <>
-      {/* { {isAuthenticated && this.componentDidMount() }  */}
-      <Jumbotron>
-       
         
-      </Jumbotron>
-      <Carousel>
-        {this.bookData.map((item)=>(
-          <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src={item.status}
-            alt="First slide"
-          />
-          <Carousel.Caption>
-            <h3>{item.name}</h3>
-            <p>{item.description}</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-        ))
+        <Jumbotron>
 
-  
-  }
-</Carousel>
-</>
+
+        </Jumbotron>
+        <Carousel>
+          {this.state.bookData.map((item) => (
+            <Carousel.Item>
+              <img
+                className="d-block w-100"
+                src={item.status}
+                alt="First slide"
+              />
+              <Carousel.Caption>
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+              </Carousel.Caption>
+            </Carousel.Item>
+          ))
+
+
+          }
+        </Carousel>
+      </>
 
     )
   }
