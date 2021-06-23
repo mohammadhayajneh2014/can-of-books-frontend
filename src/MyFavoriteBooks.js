@@ -59,7 +59,7 @@ console.log(bookInfo2);
   }
   componentDidMount = () => {
     let server = process.env.REACT_APP_SERVER_URL;
-    let reqBookUrl = `${server}/books?email=${this.props.auth0.user.email}`;
+    let reqBookUrl = `http://localhost:3020/book?email=${this.props.auth0.user.email}`;
     console.log(server);
     console.log(this.props.auth0.user.email);
     console.log(reqBookUrl);
