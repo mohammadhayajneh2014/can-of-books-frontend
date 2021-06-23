@@ -8,6 +8,7 @@ import axios from "axios";
 import { withAuth0 } from "@auth0/auth0-react";
 // import Carousel from "react-bootstrap/Carousel";
 import BookFormModal from "./component/BookFormModal";
+import UpdateBookForm from "./component/UpdateBookForm";
 
 require("dotenv").config();
 
@@ -17,7 +18,13 @@ class MyFavoriteBooks extends React.Component {
     this.state = {
       data: [],
       showModal: false,
-      newBook:{}
+      showUpdateModal:false,
+      newBook:{},
+      name:"",
+      description:"",
+      status:"",
+      index:0,
+      item:'',
     };
   }
   
@@ -25,6 +32,60 @@ class MyFavoriteBooks extends React.Component {
     this.setState({
       showModal:!this.state.showModal,
     });
+  }
+  
+show=()=>{
+  this.setState({
+    showUpdateModal:!this.state.showUpdateModal,
+  })
+}
+
+
+  setName = (e) => {
+    this.setState({
+     name: e.target.value
+    })
+  }
+
+  setDescription = (e) => {
+    this.setState({
+      description: e.target.value
+    })
+  }
+  setStatus = (e) => {
+    this.setState({
+      status: e.target.value
+    })
+  }
+  getdataupdate=(idx,item)=>{
+    console.log(idx,item);
+    }
+      updateONBook=async (idx,item)=>{
+        console.log(idx);
+        this.show();
+       this.setState({
+         name:item.name,
+         description:item.description,
+         item:item,
+         index:idx
+       })
+      }
+  updateBook = async(e) => {
+    e.preventDefault();
+  
+    const bookData = {
+      name: e.target.name.value,
+      description: e.target.description.value,
+      status:e.target.status.value,
+      email:this.props.auth0.user.email
+    }
+console.log(bookData);
+console.log('Im inside update and inex = ',this.state.index);
+    let updatedBook = await axios.put(`http://localhost:3010/updateBook/${this.state.index}`,bookData)
+   this.setState({
+  data:updatedBook.data,
+ })
+ console.log(this.state.data);
   }
   getBookDataFromForm=(event)=>{
     event.preventDefault();
@@ -35,7 +96,8 @@ class MyFavoriteBooks extends React.Component {
       status:event.target.status.value,
       email:this.props.auth0.user.email
     }
-    let url=`http://localhost:3020/addbook`;
+
+    let url=`http://localhost:3010/addbook`;
     
     axios.post(url,bookInfo2).then((result)=>{
       this.setState({
@@ -51,7 +113,7 @@ console.log(bookInfo2);
     const userName = {
       email:this.props.auth0.user.email
         }
-    let result = await axios.delete(`http://localhost:3020/deletebook/${index}`,{ params: userName })
+    let result = await axios.delete(`http://localhost:3010/deletebook/${index}`,{ params: userName })
     this.setState({
       data:result.data
     })
@@ -59,20 +121,17 @@ console.log(bookInfo2);
   }
   componentDidMount = () => {
     let server = process.env.REACT_APP_SERVER_URL;
-    let reqBookUrl = `http://localhost:3020/book?email=${this.props.auth0.user.email}`;
+    let bookReqUrl = `${server}/books?email=${this.props.auth0.user.email}`;
     console.log(server);
     console.log(this.props.auth0.user.email);
-    console.log(reqBookUrl);
-    axios.get(reqBookUrl).then((bookResult) => {
+    axios.get(bookReqUrl).then((bookResult) => {
       let dataBook = bookResult.data;
-      
       this.setState({
      data: dataBook
       })
-      console.log('dataBook');
  
     });
-    console.log(this.state.data);
+    
     // console.log(this.state.data);
     // console.log(this.state.dataBook);
   };
@@ -80,29 +139,29 @@ console.log(bookInfo2);
     // const { isAuthenticated } = this.props.auth0;
     return (
       <>
-        {/* <Carousel fade> */}
           {/* {isAuthenticated && this.componentDidMount()} */}
           <Jumbotron>
             <h1>My Favorite Books</h1>
             <p>This is a collection of my favorite books</p>
           </Jumbotron>
-           <BookFormModal updatBook={this.updateModal}  flag={this.state.showModal}
+           <BookFormModal updateBook={this.updateModal}  flag={this.state.showModal}
             bookInfo={this.getBookDataFromForm}/>
+            {this.updateONBook &&
+            <UpdateBookForm 
+            item={this.state.item}
+            show={this.show}
+                     showUpdateModal={this.state.showUpdateModal}
+            bookInfo={this.getBookDataFromForm}
+            updateBook={this.updateBook}
+            handleName={this.setName}
+            handleDesc={this.setDescription}
+            handleStatus={this.setStatus}
+             />
+            }
           {
             this.state.data.length !==0 &&
             this.state.data.map((item, indx) => {
               return (
-                // <Carousel.Item key={indx} interval={1000}>
-                //   <img
-                //     className="d-block w-100"
-                //     src={item.image}
-                //     alt="slide"
-                //   />
-                //   <Carousel.Caption>
-                //     <h3>{item.name}</h3>
-                //     <p>{item.description}</p>
-                //   </Carousel.Caption>
-                // </Carousel.Item>
                 <Card className="text-center" key={indx}>
   
                 <Card.Body>
@@ -114,12 +173,12 @@ console.log(bookInfo2);
                   {item.image}
                   </Card.Text> */}
                   <Button variant="primary"  onClick={()=>this.deleteBook(indx)}>Delete</Button>
+                  <Button variant="primary"   onClick={()=>this.updateONBook(indx,item)}>Update</Button>
                 </Card.Body>
                 <Card.Footer className="text-muted">{item.status}</Card.Footer>
               </Card>
               );
             })}
-        {/* </Carousel> */}
       </>
     );
   }

@@ -7,9 +7,9 @@ export class BookFormModal extends Component {
   render() {
     return (
       <div>
-        <button type="submit" onClick={this.props.updatBook}>Add Book</button>
+        <Button type="submit" onClick={this.props.updateBook}>Add Book</Button>
 
-<Modal show={this.props.flag} onHide={this.props.updatBook}>
+<Modal show={this.props.flag} onHide={this.props.updateBook}>
 <Modal.Header closeButton>
 <Modal.Title id="contained-modal-title-vcenter">
 {this.props.title1}
@@ -36,7 +36,7 @@ export class BookFormModal extends Component {
   <option value="recommendedtoMe">Recommended to Me </option>
 </Form.Control>
 </Form.Group>
-<Button variant="primary" type="submit" onClick={this.props.updatBook}>
+<Button variant="primary" type="submit" onClick={this.props.updateBook}>
 Submit
 </Button>
 </Form>
